@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2012
+ * Copyright (C) 2013
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU General Public License as published by the Free Software Foundation, either version 3 of the
@@ -15,22 +15,32 @@
 package pso;
 
 /**
- * Represents a solution to a 
+ * Represents a solution to a PSO solvable problem.
  */
 abstract public class Particle {
-  final private double velocity;
-  final private double position;
+  private double velocity;
+  private double currentPosition;
+  private double bestPosition;
   
-  public Particle(double velocity, double position){
+  public Particle(double velocity){
     this.velocity = velocity;
-    this.position = position;
   }
   
   public double getVelocity(){
     return this.velocity;
   }
+
+  public void setVelocity(double newVelocity){
+    this.velocity = newVelocity;
+  }
   
-  abstract public double getPosition();
+  public double getCurrentPosition(){
+    return this.currentPosition;
+  }
+  
+  public double getBestPosition(){
+    return this.bestPosition;
+  }
   
   abstract public void updatePosition();
 }
