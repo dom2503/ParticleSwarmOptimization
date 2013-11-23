@@ -53,4 +53,8 @@ public class PackageManager {
   public List<Package> getPackages(){
     return Collections.unmodifiableList(this.packages);
   }
+  
+  public Package getPackageAt(int index){
+    return this.packages.get(index);
+  }
 }

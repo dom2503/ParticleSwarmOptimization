@@ -28,7 +28,7 @@ abstract public class ParticleSwarm {
 
   private final BinaryParticle[] particles;
   private BinaryParticle bestParticle;
-  private Random random;
+  protected final Random random;
 
   /**
    * Initializes a particle swarm with default values.
@@ -60,8 +60,12 @@ abstract public class ParticleSwarm {
    */
   public void initializeParticles() {
     int particleCount = this.particles.length;
+    double highestEvaluation = -1.0;
     for (int i = 0; i < particleCount; i++) {
       this.particles[i] = this.createProblemSpecificParticle();
+      if(this.particles[i].getCurrentEvaluation() > highestEvaluation){
+        this.bestParticle = this.particles[i];
+      }
     }
   }
 
@@ -81,21 +85,19 @@ abstract public class ParticleSwarm {
           this.bestParticle = currentParticle;
         }
       }
+      this.printCurrentBest();
     }
+  }
+  
+  private void printCurrentBest(){
+    System.out.println("Best result: " + this.bestParticle.getBestEvaluation());
   }
 
   abstract protected void updateEvaluation(BinaryParticle particle);
 
-  private void updatePosition(BinaryParticle particle, int currentIteration) {
-    int dimensions = particle.getDimensions();
-    for (int i = 0; i < dimensions; i++) {
-      double sigmoid = this.calculateSigmoid(i, particle, currentIteration);
-      boolean newValue = Math.random() < sigmoid;
-      particle.setValueAt(i, newValue);
-    }
-  }
+  abstract protected void updatePosition(BinaryParticle particle, int currentIteration) ;
 
-  private double calculateSigmoid(int dimension, BinaryParticle particle, int iteration) {
+  protected double calculateSigmoid(int dimension, BinaryParticle particle, int iteration) {
     double sigmoid = 1 / 1 + Math.pow(Math.E, -(Math.pow(particle.getVelocityAt(dimension), iteration)));
 
     return sigmoid;
