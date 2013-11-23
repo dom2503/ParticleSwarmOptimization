@@ -14,26 +14,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package pso.knapsack;
 
-import java.util.ArrayList;
-import pso.Particle;
+import pso.BinaryParticle;
 
 /**
  *
  */
-public class KnapsackParticle extends Particle{
+public class KnapsackParticle extends BinaryParticle {
 
-  private boolean[] packages;
-  
-  public KnapsackParticle(double velocity) {
-    super(velocity);
+
+  public KnapsackParticle(int size){
+    super(size);
   }
 
-  @Override
-  public void updatePosition() {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-  }
-  
 }

@@ -26,15 +26,15 @@ abstract public class ParticleSwarm {
   private final double localAttraction;
   private final double globalAttraction;
 
-  private final Particle[] particles;
-  private double bestPosition;
+  private final BinaryParticle[] particles;
+  private BinaryParticle bestParticle;
   private Random random;
 
   /**
    * Initializes a particle swarm with default values.
    */
   public ParticleSwarm() {
-    this(20, 1000, 20.0, 2.0, 2.0);
+    this(20, 1000, 4.25, 2.0, 2.0);
   }
 
   /**
@@ -49,41 +49,56 @@ abstract public class ParticleSwarm {
   public ParticleSwarm(int particleCount, int generationMaximum, double maximumVelocity, double localAttraction, double globalAttraction) {
     this.velocityMaximum = maximumVelocity;
     this.generationMaximum = generationMaximum;
-    this.particles = new Particle[particleCount];
+    this.particles = new BinaryParticle[particleCount];
     this.localAttraction = localAttraction;
     this.globalAttraction = globalAttraction;
     this.random = new Random();
-
-    this.initializeParticles();
   }
 
   /**
    *
    */
-  private void initializeParticles() {
+  public void initializeParticles() {
     int particleCount = this.particles.length;
     for (int i = 0; i < particleCount; i++) {
       this.particles[i] = this.createProblemSpecificParticle();
     }
   }
 
-  abstract protected Particle createProblemSpecificParticle();
+  abstract protected BinaryParticle createProblemSpecificParticle();
 
   /**
    * Pseudocode from: http://www.cleveralgorithms.com/nature-inspired/swarm/pso.html
    */
   final public void run() {
     for (int i = 0; i < this.generationMaximum; i++) {
-      for (Particle currentParticle : this.particles) {
+      for (BinaryParticle currentParticle : this.particles) {
         this.updateVelocity(currentParticle);
-      //currentParticle.updatePosition(currentParticle);
+        this.updatePosition(currentParticle, i + 1);
+        this.updateEvaluation(currentParticle);
 
-        /*if(this.calculateCost(currentParticle) <= this.calculateCost(this.best)){
-         this.best = currentParticle;
-         if(this.calculateCost(best))
-         }*/
+        if (currentParticle.getCurrentEvaluation() <= this.bestParticle.getBestEvaluation()) {
+          this.bestParticle = currentParticle;
+        }
       }
     }
+  }
+
+  abstract protected void updateEvaluation(BinaryParticle particle);
+
+  private void updatePosition(BinaryParticle particle, int currentIteration) {
+    int dimensions = particle.getDimensions();
+    for (int i = 0; i < dimensions; i++) {
+      double sigmoid = this.calculateSigmoid(i, particle, currentIteration);
+      boolean newValue = Math.random() < sigmoid;
+      particle.setValueAt(i, newValue);
+    }
+  }
+
+  private double calculateSigmoid(int dimension, BinaryParticle particle, int iteration) {
+    double sigmoid = 1 / 1 + Math.pow(Math.E, -(Math.pow(particle.getVelocityAt(dimension), iteration)));
+
+    return sigmoid;
   }
 
   /**
@@ -91,14 +106,20 @@ abstract public class ParticleSwarm {
    *
    * @param particle
    */
-  public void updateVelocity(Particle particle) {
-    double newVelocity = particle.getVelocity()
-            + (this.localAttraction * random.nextDouble()
-            * (particle.getBestPosition() - particle.getCurrentPosition()))
-            + (this.globalAttraction * random.nextDouble()
-            * (this.bestPosition - particle.getCurrentPosition()));
+  public void updateVelocity(BinaryParticle particle) {
+    int dimensions = particle.getDimensions();
+    for (int i = 0; i < dimensions; i++) {
+      int localBestPosition = particle.getValueAtBest(i) ? 1 : 0;
+      int currentPosition = particle.getValueAt(i) ? 1 : 0;
 
-    //don't exceed a certain threshold
-    particle.setVelocity(Math.max(velocityMaximum, newVelocity));
+      double newVelocity = particle.getVelocityAt(i)
+              + (this.localAttraction * random.nextDouble()
+              * (localBestPosition - currentPosition))
+              + (this.globalAttraction * random.nextDouble()
+              * (this.bestParticle.getBestEvaluation() - currentPosition));
+
+      //don't exceed a certain threshold
+      particle.setVelocityAt(i, Math.max(velocityMaximum, newVelocity));
+    }
   }
 }

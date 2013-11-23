@@ -14,31 +14,43 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package pso.knapsack;
 
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Scanner;
 
 /**
- *
+ * This class is able to read a list of packages from a txt file.
  */
 public class PackageManager {
-  
-  private ArrayList<Package> packages;
-  
-  public PackageManager(){
+
+  final private ArrayList<Package> packages;
+
+  public PackageManager() {
     packages = new ArrayList<>();
+    this.readPackages("pso-packages.txt");
   }
-  
-  public void readFile(String filename){
-    try{
-    Scanner scanner = new Scanner(new File(filename));
-    } catch(FileNotFoundException e){
-      System.out.println("The file couldn't be found");
+
+  private void readPackages(String filename) {
+    InputStream in = getClass().getResourceAsStream(filename);
+    Scanner scanner = new Scanner(in);
+    String line;
+    double value;
+    double weight;
+    
+    for(int i=0; i< 2000; i++){
+      line = scanner.nextLine();
+      String[] parts = line.split(",");
+      value = Double.parseDouble(parts[0]);
+      weight = Double.parseDouble(parts[1]);
+      packages.add(new Package(i, value, weight));
     }
   }
   
+  public List<Package> getPackages(){
+    return Collections.unmodifiableList(this.packages);
+  }
 }

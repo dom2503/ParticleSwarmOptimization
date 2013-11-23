@@ -1,5 +1,9 @@
+
+import pso.knapsack.KnapsackSwarm;
+import pso.knapsack.PackageManager;
+
 /*
- * Copyright (C) 2013
+ * Copyright (C) 2013 Dominik
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,31 +19,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package pso.knapsack;
-
 /**
- * Represents a package for the knapsack problem.
+ * @author Dominik Horb
  */
-public class Package {
-  final private int index;
-  final private double weight;
-  final private double value;
+public class ParticleSwarmTasks {
   
-  public Package(int index, double value, double weight){
-    this.index = index;
-    this.weight = weight;
-    this.value = value;
+  public static void main(String[] args){
+    ParticleSwarmTasks psoTasks = new ParticleSwarmTasks();
+    psoTasks.runSimpleKnapsack();
   }
   
-  public int getIndex(){
-    return this.index;
-  }
-  
-  public double getWeight(){
-    return this.weight;
-  }
-  
-  public double getValue(){
-    return this.value;
+  private void runSimpleKnapsack(){
+    KnapsackSwarm swarm = new KnapsackSwarm();
+    swarm.initializeParticles();
+    swarm.run();
   }
 }
