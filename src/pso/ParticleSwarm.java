@@ -103,7 +103,7 @@ abstract public class ParticleSwarm {
   }
 
   private void printCurrentBest() {
-    System.out.println("Best result: " + this.bestParticle.getBestEvaluation());
+    System.out.println("" + this.bestParticle.getBestEvaluation());
   }
 
   abstract protected void updateEvaluation(Particle particle);

@@ -1,6 +1,8 @@
 
+import java.util.Scanner;
+import pso.ParticleSwarm;
 import pso.knapsack.KnapsackSwarm;
-import pso.knapsack.PackageManager;
+import pso.knapsack.VolumeKnapsack;
 
 /*
  * Copyright (C) 2013 Dominik
@@ -18,20 +20,53 @@ import pso.knapsack.PackageManager;
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 /**
  * @author Dominik Horb
  */
 public class ParticleSwarmTasks {
-  
-  public static void main(String[] args){
+
+  private final Scanner scanner;
+
+  public static void main(String[] args) {
     ParticleSwarmTasks psoTasks = new ParticleSwarmTasks();
-    psoTasks.runSimpleKnapsack();
+    psoTasks.run();
   }
-  
-  private void runSimpleKnapsack(){
-    KnapsackSwarm swarm = new KnapsackSwarm(1000, 500, 4.25, 0.0004, 0.0004);
-    swarm.initializeParticles();
-    swarm.run();
+
+  public ParticleSwarmTasks() {
+    this.scanner = new Scanner(System.in);
+  }
+
+  private void run() {
+    System.out.println("Welcome to the PSO");
+    System.out.println("Which local attraction would you like to use?");
+    double localAttraction = scanner.nextDouble();
+    System.out.println("Which global attraction would you like to use?");
+    double globalAttraction = scanner.nextDouble();
+    System.out.println("How many generations should be generated?");
+    int generations = scanner.nextInt();
+    System.out.println("How many particles should be used?");
+    int particles = scanner.nextInt();
+    System.out.println("Which type would you like to run?");
+    System.out.println("5. Simple Kanpsack problem");
+    System.out.println("6. Simple Kanpsack with inertia");
+    System.out.println("7. Kanpsack problem with volume");
+    int problemId = scanner.nextInt();
+
+    ParticleSwarm particleSwarm = null;
+
+    switch (problemId) {
+      case 5:
+        particleSwarm = new KnapsackSwarm(particles, generations, 4.25, localAttraction, globalAttraction);
+        break;
+
+      case 7:
+        particleSwarm = new VolumeKnapsack(particles, generations, 4.25, localAttraction, globalAttraction);
+        break;
+    }
+
+    if (particleSwarm != null) {
+      particleSwarm.initializeParticles();
+      particleSwarm.run();
+    }
   }
 }

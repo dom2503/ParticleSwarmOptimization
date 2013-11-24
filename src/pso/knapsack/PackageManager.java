@@ -20,6 +20,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 import java.util.Scanner;
 
 /**
@@ -28,9 +29,11 @@ import java.util.Scanner;
 public class PackageManager {
 
   final private ArrayList<Package> packages;
+  final private Random random;
 
   public PackageManager() {
-    packages = new ArrayList<>();
+    this.packages = new ArrayList<>();
+    this.random = new Random();
     this.readPackages("pso-packages.txt");
   }
 
@@ -50,7 +53,7 @@ public class PackageManager {
       String[] parts = line.split(",");
       value = Double.parseDouble(parts[0]);
       weight = Double.parseDouble(parts[1]);
-      packages.add(new Package(i, value, weight));
+      packages.add(new Package(i, value, weight, this.random.nextInt(5)+1));
     }
   }
   

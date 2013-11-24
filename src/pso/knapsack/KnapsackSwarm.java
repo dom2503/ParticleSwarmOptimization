@@ -28,10 +28,10 @@ import pso.ParticleSwarm;
  */
 public class KnapsackSwarm extends ParticleSwarm {
 
-  private final static int WEIGHT_LIMIT = 1000;
-  private final static double MINIMUM_VELOCITY = 0.001;
+  protected final static int WEIGHT_LIMIT = 1000;
+  protected final static double MINIMUM_VELOCITY = 0.01;
 
-  final private PackageManager packageManager;
+  final protected PackageManager packageManager;
 
   public KnapsackSwarm(int particleCount, int generationMaximum, double maximumVelocity, double localAttraction, double globalAttraction) {
     super(particleCount, generationMaximum, maximumVelocity, localAttraction, globalAttraction);
@@ -71,18 +71,18 @@ public class KnapsackSwarm extends ParticleSwarm {
     return particle;
   }
 
-  private void initializeVelocities(BinaryParticle particle, int size) {
+  protected void initializeVelocities(BinaryParticle particle, int size) {
     for (int i = 0; i < size; i++) {
       particle.setVelocityAt(i, MINIMUM_VELOCITY);
     }
   }
 
-  private void initializeEvaluations(BinaryParticle particle, double valueSum) {
+  protected void initializeEvaluations(BinaryParticle particle, double valueSum) {
     particle.setBestEvaluation(valueSum);
     particle.setCurrentEvaluation(valueSum);
   }
 
-  private void setSelectedPackagesInParticle(Set<Package> selectedPackages, BinaryParticle particle) {
+  protected void setSelectedPackagesInParticle(Set<Package> selectedPackages, BinaryParticle particle) {
     for (Package currentPackage : selectedPackages) {
       particle.setValueAt(currentPackage.getIndex(), true);
     }

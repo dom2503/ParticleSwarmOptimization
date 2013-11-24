@@ -24,11 +24,13 @@ public class Package {
   final private int index;
   final private double weight;
   final private double value;
+  final private double volume;
   
-  public Package(int index, double value, double weight){
+  public Package(int index, double value, double weight, double volume){
     this.index = index;
     this.weight = weight;
     this.value = value;
+    this.volume = volume;
   }
   
   public int getIndex(){
@@ -41,5 +43,9 @@ public class Package {
   
   public double getValue(){
     return this.value;
+  }
+  
+  public double getVolume(){
+    return this.volume;
   }
 }
