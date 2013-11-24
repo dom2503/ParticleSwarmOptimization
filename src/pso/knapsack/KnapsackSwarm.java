@@ -125,4 +125,20 @@ public class KnapsackSwarm extends ParticleSwarm {
 
     return sigmoid;
   }
+
+  @Override
+  protected void printState() {
+    int dimensions = this.bestParticle.getDimensions();
+    int count = 0;
+    
+    System.out.println("Packages in best solution:");
+    for(int i=0; i<dimensions; i++){
+      if(this.bestParticle.getValueAtBest(i)){
+        Package currentPackage = this.packageManager.getPackageAt(i);
+        System.out.println("Value: " + currentPackage.getValue() + ", Weight: " + currentPackage.getWeight() + ", Volume: " + currentPackage.getVolume());
+        count++;
+      }
+    }
+    System.out.println("Number of packages: " + count);
+  }
 }

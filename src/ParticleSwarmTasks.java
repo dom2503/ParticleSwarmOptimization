@@ -47,9 +47,8 @@ public class ParticleSwarmTasks {
     System.out.println("How many particles should be used?");
     int particles = scanner.nextInt();
     System.out.println("Which type would you like to run?");
-    System.out.println("5. Simple Kanpsack problem");
-    System.out.println("6. Simple Kanpsack with inertia");
-    System.out.println("7. Kanpsack problem with volume");
+    System.out.println("5. Simple Knapsack problem");
+    System.out.println("7. Knapsack problem with volume");
     int problemId = scanner.nextInt();
 
     ParticleSwarm particleSwarm = null;

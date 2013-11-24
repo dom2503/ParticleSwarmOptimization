@@ -27,7 +27,7 @@ abstract public class ParticleSwarm {
   private final double globalAttraction;
 
   private final Particle[] particles;
-  private Particle bestParticle;
+  protected Particle bestParticle;
   protected final Random random;
 
   /**
@@ -84,6 +84,7 @@ abstract public class ParticleSwarm {
       }
       this.printCurrentBest();
     }
+    this.printState();
   }
 
   /**
@@ -105,6 +106,8 @@ abstract public class ParticleSwarm {
   private void printCurrentBest() {
     System.out.println("" + this.bestParticle.getBestEvaluation());
   }
+  
+  abstract protected void printState();
 
   abstract protected void updateEvaluation(Particle particle);
 
