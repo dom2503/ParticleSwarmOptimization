@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Scanner;
 
 /**
- * This class is able to read a list of packages from a txt file.
+ * This class is able to read a list of packages from a .txt file.
  */
 public class PackageManager {
 
@@ -34,6 +34,10 @@ public class PackageManager {
     this.readPackages("pso-packages.txt");
   }
 
+  /**
+   * Takes the file with the given name creates package objects from it's content.
+   * @param filename 
+   */
   private void readPackages(String filename) {
     InputStream in = getClass().getResourceAsStream(filename);
     Scanner scanner = new Scanner(in);
@@ -50,10 +54,17 @@ public class PackageManager {
     }
   }
   
+  /**
+   * @return A list of all the existing packages.
+   */
   public List<Package> getPackages(){
     return Collections.unmodifiableList(this.packages);
   }
   
+  /**
+   * @param index The index of the requested package.
+   * @return The package at the given index.
+   */
   public Package getPackageAt(int index){
     return this.packages.get(index);
   }

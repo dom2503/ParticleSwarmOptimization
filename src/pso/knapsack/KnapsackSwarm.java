@@ -20,6 +20,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import pso.BinaryParticle;
+import pso.Particle;
 import pso.ParticleSwarm;
 
 /**
@@ -28,11 +29,12 @@ import pso.ParticleSwarm;
 public class KnapsackSwarm extends ParticleSwarm {
 
   private final static int WEIGHT_LIMIT = 1000;
+  private final static double MINIMUM_VELOCITY = 0.001;
 
   final private PackageManager packageManager;
 
-  public KnapsackSwarm() {
-    super();
+  public KnapsackSwarm(int particleCount, int generationMaximum, double maximumVelocity, double localAttraction, double globalAttraction) {
+    super(particleCount, generationMaximum, maximumVelocity, localAttraction, globalAttraction);
     this.packageManager = new PackageManager();
   }
 
@@ -45,7 +47,6 @@ public class KnapsackSwarm extends ParticleSwarm {
     Set<Package> selectedPackages = new HashSet<>();
     double weightSum = 0;
     double valueSum = 0;
-    BinaryParticle particle = new BinaryParticle(packages.size());
     Package selectedPackage;
 
     while (weightSum < WEIGHT_LIMIT) {
@@ -60,16 +61,19 @@ public class KnapsackSwarm extends ParticleSwarm {
         weightSum = newSum;
       }
     }
+
+    BinaryParticle particle = new BinaryParticle(packages.size());
     this.setSelectedPackagesInParticle(selectedPackages, particle);
     this.initializeEvaluations(particle, valueSum);
     this.initializeVelocities(particle, packages.size());
+    particle.useCurrentAsBest();
 
     return particle;
   }
 
   private void initializeVelocities(BinaryParticle particle, int size) {
     for (int i = 0; i < size; i++) {
-      particle.setVelocityAt(i, 1.0);
+      particle.setVelocityAt(i, MINIMUM_VELOCITY);
     }
   }
 
@@ -81,40 +85,44 @@ public class KnapsackSwarm extends ParticleSwarm {
   private void setSelectedPackagesInParticle(Set<Package> selectedPackages, BinaryParticle particle) {
     for (Package currentPackage : selectedPackages) {
       particle.setValueAt(currentPackage.getIndex(), true);
-      particle.setValueAtBest(currentPackage.getIndex(), true);
     }
+    particle.useCurrentAsBest();
   }
 
   @Override
-  protected void updateEvaluation(BinaryParticle particle) {
+  protected void updateEvaluation(Particle particle) {
     int dimensions = particle.getDimensions();
     double sum = 0;
+    double weightSum = 0;
     List<Package> packages = this.packageManager.getPackages();
     for (int i = 0; i < dimensions; i++) {
       if (particle.getValueAt(i)) {
         sum += packages.get(i).getValue();
+        weightSum += packages.get(i).getWeight();
       }
+    }
+    if (weightSum <= WEIGHT_LIMIT) {
+      particle.setCurrentEvaluation(sum);
+    } else {
+      particle.setCurrentEvaluation(-1);
     }
   }
 
   @Override
-  protected void updatePosition(BinaryParticle particle, int currentIteration) {
+  protected void updatePosition(Particle particle, int currentIteration) {
     int dimensions = particle.getDimensions();
     particle.setCurrentEvaluation(0);
-    double weightSum = 0;
     for (int i = 0; i < dimensions; i++) {
       double sigmoid = this.calculateSigmoid(i, particle, currentIteration);
-      boolean newValue = Math.random() < sigmoid;
+      boolean newValue = Math.random() > sigmoid;
       particle.setValueAt(i, newValue);
-      if (newValue) {
-        weightSum += this.packageManager.getPackageAt(i).getWeight();
-        particle.setCurrentEvaluation(particle.getCurrentEvaluation() + this.packageManager.getPackageAt(i).getValue());
-      }
-    }
-    
-    if(weightSum > WEIGHT_LIMIT){
-      particle.setCurrentEvaluation(-5);
     }
   }
 
+  protected double calculateSigmoid(int dimension, Particle particle, int iteration) {
+    double power = Math.pow(Math.E, -1 * particle.getVelocityAt(dimension));
+    double sigmoid = 1.0 / (1.0 + power);
+
+    return sigmoid;
+  }
 }

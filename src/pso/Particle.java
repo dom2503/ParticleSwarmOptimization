@@ -52,9 +52,9 @@ public interface Particle {
   public boolean getValueAtBest(int dimension);
 
   /**
-   * Changes the value of the best position vector in the asked dimension.
+   * Changes the value of the best position vector to the current position.
    */
-  public void setValueAtBest(int dimension, boolean newValue);
+  public void useCurrentAsBest();
 
   /**
    * Returns the evaluation for the best position this particle had.

@@ -30,7 +30,7 @@ public class ParticleSwarmTasks {
   }
   
   private void runSimpleKnapsack(){
-    KnapsackSwarm swarm = new KnapsackSwarm();
+    KnapsackSwarm swarm = new KnapsackSwarm(1000, 500, 4.25, 0.0004, 0.0004);
     swarm.initializeParticles();
     swarm.run();
   }

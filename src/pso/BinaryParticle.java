@@ -64,8 +64,8 @@ public class BinaryParticle implements Particle{
   }
   
   @Override
-  public void setValueAtBest(int dimension, boolean newValue){
-    this.bestPosition[dimension] = newValue;
+  public void useCurrentAsBest(){
+    System.arraycopy(this.currentPosition, 0, this.bestPosition, 0, this.currentPosition.length);
   }
   
   @Override

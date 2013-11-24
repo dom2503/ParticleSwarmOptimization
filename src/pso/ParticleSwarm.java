@@ -26,16 +26,9 @@ abstract public class ParticleSwarm {
   private final double localAttraction;
   private final double globalAttraction;
 
-  private final BinaryParticle[] particles;
-  private BinaryParticle bestParticle;
+  private final Particle[] particles;
+  private Particle bestParticle;
   protected final Random random;
-
-  /**
-   * Initializes a particle swarm with default values.
-   */
-  public ParticleSwarm() {
-    this(20, 1000, 4.25, 2.0, 2.0);
-  }
 
   /**
    * Initializes a particle swarm with the given values.
@@ -56,19 +49,24 @@ abstract public class ParticleSwarm {
   }
 
   /**
-   *
+   * Generates all problem specific particles and uses the best of them as the current best.
    */
   public void initializeParticles() {
     int particleCount = this.particles.length;
     double highestEvaluation = -1.0;
     for (int i = 0; i < particleCount; i++) {
       this.particles[i] = this.createProblemSpecificParticle();
-      if(this.particles[i].getCurrentEvaluation() > highestEvaluation){
+      if (this.particles[i].getCurrentEvaluation() > highestEvaluation) {
         this.bestParticle = this.particles[i];
       }
     }
   }
 
+  /**
+   * Creates an appropriate particle for the current problem implementation.
+   *
+   * @return
+   */
   abstract protected BinaryParticle createProblemSpecificParticle();
 
   /**
@@ -76,39 +74,48 @@ abstract public class ParticleSwarm {
    */
   final public void run() {
     for (int i = 0; i < this.generationMaximum; i++) {
-      for (BinaryParticle currentParticle : this.particles) {
+      for (Particle currentParticle : this.particles) {
         this.updateVelocity(currentParticle);
         this.updatePosition(currentParticle, i + 1);
         this.updateEvaluation(currentParticle);
 
-        if (currentParticle.getCurrentEvaluation() <= this.bestParticle.getBestEvaluation()) {
-          this.bestParticle = currentParticle;
-        }
+        this.setLocalBest(currentParticle);
+        this.setGlobalBest(currentParticle);
       }
       this.printCurrentBest();
     }
   }
-  
-  private void printCurrentBest(){
+
+  /**
+   * Checks if the given particle is better then global best and sets it.
+   */
+  private void setGlobalBest(Particle particle) {
+    if (this.bestParticle.getBestEvaluation() < particle.getBestEvaluation()) {
+      this.bestParticle = particle;
+    }
+  }
+
+  private void setLocalBest(Particle particle) {
+    if (particle.getBestEvaluation() < particle.getCurrentEvaluation()) {
+      particle.useCurrentAsBest();
+      particle.setBestEvaluation(particle.getCurrentEvaluation());
+    }
+  }
+
+  private void printCurrentBest() {
     System.out.println("Best result: " + this.bestParticle.getBestEvaluation());
   }
 
-  abstract protected void updateEvaluation(BinaryParticle particle);
+  abstract protected void updateEvaluation(Particle particle);
 
-  abstract protected void updatePosition(BinaryParticle particle, int currentIteration) ;
-
-  protected double calculateSigmoid(int dimension, BinaryParticle particle, int iteration) {
-    double sigmoid = 1 / 1 + Math.pow(Math.E, -(Math.pow(particle.getVelocityAt(dimension), iteration)));
-
-    return sigmoid;
-  }
+  abstract protected void updatePosition(Particle particle, int currentIteration);
 
   /**
    * Calculates and sets the new velocity for the given particle.
    *
    * @param particle
    */
-  public void updateVelocity(BinaryParticle particle) {
+  public void updateVelocity(Particle particle) {
     int dimensions = particle.getDimensions();
     for (int i = 0; i < dimensions; i++) {
       int localBestPosition = particle.getValueAtBest(i) ? 1 : 0;
@@ -121,7 +128,11 @@ abstract public class ParticleSwarm {
               * (this.bestParticle.getBestEvaluation() - currentPosition));
 
       //don't exceed a certain threshold
-      particle.setVelocityAt(i, Math.max(velocityMaximum, newVelocity));
+      if (newVelocity > velocityMaximum) {
+        particle.setVelocityAt(i, velocityMaximum);
+      } else {
+        particle.setVelocityAt(i, newVelocity);
+      }
     }
   }
 }
